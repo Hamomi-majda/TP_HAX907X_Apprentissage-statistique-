@@ -1,12 +1,12 @@
 
-# Import des bibliothèques nécessaires
+# %% Import des bibliothèques nécessaires
 from sklearn import datasets  # Pour charger le dataset Iris
 from sklearn.model_selection import train_test_split  # Pour diviser les données en train/test
 from sklearn.svm import SVC  # Pour créer un modèle SVM
 from sklearn.metrics import accuracy_score  # Pour évaluer la précision du modèle
 import seaborn as sns  # Pour la visualisation (si nécessaire)
 import matplotlib.pyplot as plt  # Pour tracer des graphiques
-
+# %% 
 # 1. Charger le dataset Iris
 iris = datasets.load_iris()
 X = iris.data  # Données d'entrée (caractéristiques)
@@ -38,3 +38,19 @@ sns.scatterplot(x=X_test[:, 0], y=X_test[:, 1], hue=y_test, style=y_pred)
 plt.title("Séparation des classes avec SVM linéaire")
 plt.show()
 
+
+# %%
+# 1. Créer un modèle SVM avec un noyau polynomial
+svm_poly = SVC(kernel='poly', degree=3)  # Degree 3 pour un noyau polynomial cubique
+
+# 2. Entraîner le modèle polynomial
+svm_poly.fit(X_train, y_train)
+
+# 3. Prédire avec le modèle polynomial
+y_pred_poly = svm_poly.predict(X_test)
+
+# 4. Évaluer la précision du modèle polynomial
+accuracy_poly = accuracy_score(y_test, y_pred_poly)
+print(f"Précision du SVM avec noyau polynomial: {accuracy_poly:.2f}")
+
+# %%
