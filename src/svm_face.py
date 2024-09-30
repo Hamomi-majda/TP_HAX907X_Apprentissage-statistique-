@@ -106,6 +106,19 @@ images_train, images_test = images[
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 # %%
 # Q3 - Compléter cette partie
 from sklearn.metrics import accuracy_score
@@ -173,6 +186,24 @@ print("done in %0.3fs" % (time() - t0))
 print("Chance level : %s" % max(np.mean(y), 1. - np.mean(y)))
 print("Accuracy : %s" % clf.score(X_test, y_test))  # Accuracy du meilleur modèle
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #%% 
 ####################################################################
 # Qualitative evaluation of the predictions using matplotlib
@@ -206,77 +237,47 @@ else:
 # %% 
 
 #%% 
-# Q4
+# Q4Q4 Ajout des variables de nuisances et comparaison de la performance
 
-def run_svm_cv(_X, _y, C_range):
-    # Diviser les données en ensemble d'entraînement et de test
+def run_svm_cv(_X, _y):
     _indices = np.random.permutation(_X.shape[0])
     _train_idx, _test_idx = _indices[:_X.shape[0] // 2], _indices[_X.shape[0] // 2:]
     _X_train, _X_test = _X[_train_idx, :], _X[_test_idx, :]
     _y_train, _y_test = _y[_train_idx], _y[_test_idx]
 
-    # Tester différentes valeurs du paramètre de régularisation C
-    scores_train = []
-    scores_test = []
-    
-    for C in C_range:
-        _clf_linear = svm.SVC(kernel='linear', C=C)
-        _clf_linear.fit(_X_train, _y_train)
-        
-        # Calculer les scores (accuracy) pour l'entraînement et le test
-        scores_train.append(1 - _clf_linear.score(_X_train, _y_train))  # Erreur d'entraînement
-        scores_test.append(1 - _clf_linear.score(_X_test, _y_test))     # Erreur de test
+    # Paramètres pour SVM linéaire avec C variant sur une plage logarithmique
+    _parameters = {'kernel': ['linear'], 'C': list(np.logspace(-3, 3, 5))}
+    _svr = svm.SVC()
+    _clf_linear = GridSearchCV(_svr, _parameters)
+    _clf_linear.fit(_X_train, _y_train)
 
-    return scores_train, scores_test
+    # Calcul des scores sur les données d'entraînement et de test
+    print('Generalization score for linear kernel: %s, %s \n' %
+          (_clf_linear.score(_X_train, _y_train), _clf_linear.score(_X_test, _y_test)))
 
-# Définir l'échelle des valeurs de C (échelle logarithmique)
-C_range = np.logspace(-5, 5, 11)
-
-# Test sur les données sans variables de nuisance
+# Exécution du SVM sur les données sans nuisance
 print("Score sans variable de nuisance")
-scores_train, scores_test = run_svm_cv(X, y, C_range)
+run_svm_cv(X, y)
 
-# Plot de l'influence du paramètre C sur l'erreur de prédiction
-plt.figure()
-plt.plot(C_range, scores_train, label="Erreur d'entraînement")
-plt.plot(C_range, scores_test, label="Erreur de test")
-plt.xscale('log')
-plt.xlabel('Paramètre de régularisation C')
-plt.ylabel('Erreur de prédiction')
-plt.title('Influence de C sur l\'erreur (sans nuisance)')
-plt.legend()
-plt.tight_layout()
-plt.show()
-
-# Ajouter du bruit (variables de nuisance) aux données
-print("Score avec variable de nuisance")
+# Ajout des variables de nuisance (bruit)
 n_features = X.shape[1]
 sigma = 1
-noise = sigma * np.random.randn(n_samples, 300)  # Ajouter 300 variables de nuisance
-X_noisy = np.concatenate((X, noise), axis=1)
-X_noisy = X_noisy[np.random.permutation(X.shape[0])]
+# Génération de 300 variables de nuisance avec une distribution gaussienne
+noise = sigma * np.random.randn(n_samples, 300)
+X_noisy = np.concatenate((X, noise), axis=1)  # Ajout des variables de nuisance aux données originales
+X_noisy = X_noisy[np.random.permutation(X.shape[0])]  # Permutation aléatoire des données pour ne pas biaiser les résultats
 
-# Test sur les données avec variables de nuisance
-scores_train_noisy, scores_test_noisy = run_svm_cv(X_noisy, y, C_range)
+# Exécution du SVM sur les données avec variables de nuisance
+print("Score avec variables de nuisance")
+run_svm_cv(X_noisy, y)
 
-# Plot de l'influence du paramètre C sur l'erreur de prédiction (avec nuisance)
-plt.figure()
-plt.plot(C_range, scores_train_noisy, label="Erreur d'entraînement (avec nuisance)")
-plt.plot(C_range, scores_test_noisy, label="Erreur de test (avec nuisance)")
-plt.xscale('log')
-plt.xlabel('Paramètre de régularisation C')
-plt.ylabel('Erreur de prédiction')
-plt.title('Influence de C sur l\'erreur (avec nuisance)')
-plt.legend()
-plt.tight_layout()
-plt.show()
 
 
 #%%
 # Q5
 print("Score après réduction de dimension avec PCA")
 
-n_components = 20  # Nombre de composantes principales (peut être ajusté)
+n_components = 100 # Nombre de composantes principales (peut être ajusté)
 pca = PCA(n_components=n_components, svd_solver='randomized').fit(X_noisy)
 
 # Transformation des données avec PCA
@@ -288,20 +289,9 @@ print(f"Variance expliquée avec {n_components} composantes : {explained_varianc
 
 
 
-#%%
-# Reprendre le pipeline SVM sur les données réduites
-scores_train_pca, scores_test_pca = run_svm_cv(X_noisy_pca, y, C_range)
 
-# %%# Plot de l'influence du paramètre C après réduction de dimension avec PCA
-plt.figure()
-plt.plot(C_range, scores_train_pca, label="Erreur d'entraînement (PCA)")
-plt.plot(C_range, scores_test_pca, label="Erreur de test (PCA)")
-plt.xscale('log')
-plt.xlabel('Paramètre de régularisation C')
-plt.ylabel('Erreur de prédiction')
-plt.title('Influence de C sur l\'erreur après PCA')
-plt.legend()
-plt.tight_layout()
-plt.show()
+
+
+
 
 # %%
