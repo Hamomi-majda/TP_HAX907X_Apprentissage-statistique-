@@ -96,29 +96,6 @@ images_train, images_test = images[
 ####################################################################
 # Quantitative evaluation of the model quality on the test set
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # %%
 # Q3 - Compléter cette partie
 from sklearn.metrics import accuracy_score
@@ -173,7 +150,6 @@ y_pred_best = best_clf.predict(X_test)
 final_score = accuracy_score(y_test, y_pred_best)
 print("Final accuracy with best C: {:.2f}".format(final_score))
 
-
 #%% 
 # predict labels for the X_test images with the best classifier
 clf = best_clf  # On utilise le meilleur classificateur trouvé précédemment
@@ -185,24 +161,6 @@ print("done in %0.3fs" % (time() - t0))
 # The chance level is the accuracy that will be reached when constantly predicting the majority class.
 print("Chance level : %s" % max(np.mean(y), 1. - np.mean(y)))
 print("Accuracy : %s" % clf.score(X_test, y_test))  # Accuracy du meilleur modèle
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 #%% 
 ####################################################################
@@ -233,8 +191,6 @@ if clf.kernel == 'linear':  # Ce plot fonctionne uniquement pour un noyau linéa
     plt.show()
 else:
     print("Le modèle n'est pas linéaire, donc les coefficients ne peuvent pas être affichés.")
-
-# %% 
 
 #%% 
 # Q4Q4 Ajout des variables de nuisances et comparaison de la performance
@@ -294,4 +250,4 @@ print(f"Variance expliquée avec {n_components} composantes : {explained_varianc
 
 
 
-# %%
+
