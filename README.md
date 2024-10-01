@@ -18,7 +18,10 @@ Voici la structure du projet :
 
 
 - **image/** : Ce dossier contient les images utilisées dans le fichier LaTeX `tp.tex`. Elles doivent être importées sur Overleaf pour garantir une compilation correcte.
-- **src/** : Ce dossier contient les fichiers Python (`.py`) utilisés pour entraîner et tester les modèles SVM. Vous pouvez exécuter ces scripts pour reproduire les résultats du rapport.
+- **src/** : Ce dossier contient les fichiers Python (`.py`) utilisés pour entraîner et tester les modèles SVM. Vous pouvez exécuter ces scripts pour reproduire les résultats du rapport.\
+  svm_iris.py: Ce script contient le code de classification pour les données Iris.\
+  svm_face.py : Ce script contient le code pour la classification de visages.
+
 - **venv_app/** : Contient l'environnement virtuel Python avec les dépendances requises pour les scripts.
 - **tp.tex** : Fichier LaTeX contenant le rapport complet.
 - **tp_apprentissage_stat.pdf** : Version PDF générée du rapport LaTeX.
